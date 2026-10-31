@@ -1,13 +1,35 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+fridge:
+  name: Холодильник двокамерний
+  category: Холодильники
+  brand: Samsung
+  energy_class: A
+  price: 28999.00
+  stock_quantity: 5
+  status: in_stock
+  rating: 4.7
+  sku: TD-FRIDGE
+  description: No Frost
 
-one:
-  name: MyString
-  category: MyString
-  price: 9.99
-  description: MyText
+washer:
+  name: Пральна машина 8 кг
+  category: Пральні машини
+  brand: Bosch
+  energy_class: B
+  price: 17499.00
+  stock_quantity: 0
+  status: on_order
+  rating: 4.2
+  sku: TD-WASHER
+  description: 1400 об/хв
 
-two:
-  name: MyString
-  category: MyString
-  price: 9.99
-  description: MyText
+old_oven:
+  name: Духова шафа стара модель
+  category: Духові шафи
+  brand: Bosch
+  energy_class: C
+  price: 9999.00
+  stock_quantity: 0
+  status: discontinued
+  rating: 3.9
+  sku: TD-OVEN01
+  description: Знято з продажу

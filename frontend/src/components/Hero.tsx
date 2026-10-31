@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import Appliance from "./Appliance";
 
 // Шкала енергокласів — характерний для побутової техніки елемент
@@ -35,7 +36,7 @@ export default function Hero() {
             ванної. Фільтруйте за брендом, ціною та енергокласом.
           </p>
           <div className="hero__cta">
-            <a className="btn btn--primary" href="#catalog">
+            <a className="btn btn--primary" href="#all">
               Перейти до каталогу
             </a>
             <a className="btn btn--ghost" href="#hits">
@@ -55,7 +56,7 @@ export default function Hero() {
                     "--w": `${row.width}%`,
                     "--c": row.color,
                     "--i": i,
-                  } as React.CSSProperties
+                  } as CSSProperties
                 }
               >
                 <span className="ladder__bar">{row.cls}</span>

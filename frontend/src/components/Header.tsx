@@ -3,6 +3,7 @@ import { CATEGORIES } from "../data";
 type Props = {
   query: string;
   onQuery: (value: string) => void;
+  onSearchSubmit: () => void;
   activeCategory: string | null;
   onCategory: (name: string | null) => void;
   cartCount: number;
@@ -19,6 +20,7 @@ const icon = {
 export default function Header({
   query,
   onQuery,
+  onSearchSubmit,
   activeCategory,
   onCategory,
   cartCount,
@@ -44,7 +46,10 @@ export default function Header({
         <form
           className="search"
           role="search"
-          onSubmit={(e) => e.preventDefault()}
+          onSubmit={(e) => {
+            e.preventDefault();
+            onSearchSubmit();
+          }}
         >
           <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" {...icon}>
             <circle cx="11" cy="11" r="7" />

@@ -1,10 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import "./App.css";
 import { DEMO_PRODUCTS, type Product } from "./data";
+import { applyFilters, EMPTY_FILTERS, type Filters } from "./filters";
 import Header from "./components/Header";
 import Hero from "./components/Hero";
 import Categories from "./components/Categories";
 import ProductSection from "./components/ProductSection";
+import Catalog from "./components/Catalog";
 import Footer from "./components/Footer";
 
 const API_URL = "http://localhost:3000/api/products";
@@ -13,8 +15,7 @@ function App() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [demo, setDemo] = useState(false);
-  const [query, setQuery] = useState("");
-  const [category, setCategory] = useState<string | null>(null);
+  const [filters, setFilters] = useState<Filters>(EMPTY_FILTERS);
   const [cart, setCart] = useState<Product[]>([]);
 
   useEffect(() => {
@@ -40,25 +41,24 @@ function App() {
       .finally(() => setLoading(false));
   }, []);
 
-  const filtering = category !== null || query.trim() !== "";
+  const shown = useMemo(() => applyFilters(products, filters), [products, filters]);
 
-  const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    return products.filter(
-      (p) =>
-        (category === null || p.category === category) &&
-        (q === "" ||
-          p.name.toLowerCase().includes(q) ||
-          p.category.toLowerCase().includes(q)),
-    );
-  }, [products, query, category]);
+  const hits = useMemo(
+    () =>
+      applyFilters(products, { ...EMPTY_FILTERS, availableOnly: true, sort: "popular" }).slice(0, 4),
+    [products],
+  );
+  const newest = useMemo(
+    () => applyFilters(products, { ...EMPTY_FILTERS, availableOnly: true, sort: "newest" }).slice(0, 4),
+    [products],
+  );
 
-  const hits = products.slice(0, 4);
-  const newest = [...products].sort((a, b) => b.id - a.id).slice(0, 4);
+  const scrollToCatalog = () =>
+    document.getElementById("all")?.scrollIntoView({ behavior: "smooth", block: "start" });
 
-  const reset = () => {
-    setCategory(null);
-    setQuery("");
+  const selectCategory = (category: string | null) => {
+    setFilters((f) => ({ ...f, category }));
+    if (category) scrollToCatalog();
   };
 
   const addToCart = (product: Product) => setCart((prev) => [...prev, product]);
@@ -66,41 +66,38 @@ function App() {
   return (
     <div id="top">
       <Header
-        query={query}
-        onQuery={setQuery}
-        activeCategory={category}
-        onCategory={setCategory}
+        query={filters.query}
+        onQuery={(query) => setFilters((f) => ({ ...f, query }))}
+        onSearchSubmit={scrollToCatalog}
+        activeCategory={filters.category}
+        onCategory={selectCategory}
         cartCount={cart.length}
       />
 
       <main>
         <Hero />
-        <Categories active={category} onSelect={setCategory} />
+        <Categories active={filters.category} onSelect={selectCategory} />
 
         {demo && !loading && (
           <p className="notice container" role="status">
             Сервер не віддав товари, тому показано демонстраційний каталог.
-            Запустіть Rails API на порту 3000, щоб побачити реальні дані.
+            Запустіть Rails API на порту 3000 і виконайте <code>bin/rails db:seed</code>.
           </p>
         )}
 
         {loading && <p className="notice container">Завантаження товарів…</p>}
 
-        {!loading && filtering && (
-          <ProductSection
-            id="results"
-            title={category ?? "Результати пошуку"}
-            products={filtered}
-            onAdd={addToCart}
-            emptyText="Нічого не знайдено. Змініть запит або скиньте фільтр."
-            action={{ label: "Скинути фільтри", onClick: reset }}
-          />
-        )}
-
-        {!loading && !filtering && (
+        {!loading && (
           <>
             <ProductSection id="hits" title="Хіти продажів" products={hits} onAdd={addToCart} />
             <ProductSection id="new" title="Нові надходження" products={newest} onAdd={addToCart} />
+            <Catalog
+              allProducts={products}
+              shown={shown}
+              filters={filters}
+              onChange={setFilters}
+              onAdd={addToCart}
+            />
           </>
         )}
       </main>
