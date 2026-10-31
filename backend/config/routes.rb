@@ -3,5 +3,6 @@ Rails.application.routes.draw do
     resources :products, only: [ :index, :show ] do
       get :facets, on: :collection
     end
+    resources :orders, only: [ :create ]
   end
 end

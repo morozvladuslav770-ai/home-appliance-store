@@ -8,6 +8,8 @@ import QtyStepper from "../components/QtyStepper";
 export default function CartPage() {
   const { items, count, total, setQty, remove, clear } = useCart();
 
+  const blocked = items.some((i) => maxQty(i.product) === 0);
+
   if (items.length === 0) {
     return (
       <section className="section container page-message">
@@ -100,10 +102,18 @@ export default function CartPage() {
             <span>До сплати</span>
             <strong>{formatPrice(String(total))}</strong>
           </p>
-          <button type="button" className="btn btn--primary btn--block" disabled>
-            Оформити замовлення
-          </button>
-          <p className="summary__hint">Оформлення замовлення з'явиться на наступному кроці.</p>
+          {blocked ? (
+            <>
+              <button type="button" className="btn btn--primary btn--block" disabled>
+                Оформити замовлення
+              </button>
+              <p className="summary__hint">Видаліть з кошика недоступні товари.</p>
+            </>
+          ) : (
+            <Link className="btn btn--primary btn--block" to="/checkout">
+              Оформити замовлення
+            </Link>
+          )}
         </aside>
       </div>
     </section>

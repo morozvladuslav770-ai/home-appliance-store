@@ -51,6 +51,18 @@ class Product < ApplicationRecord
     order(SORTS.fetch(key.to_s, SORTS["newest"]))
   end
 
+  # Зменшує залишок; коли товар закінчився, він переходить у «під замовлення»
+  def reserve!(quantity)
+    return unless in_stock?
+
+    left = [ stock_quantity - quantity, 0 ].max
+    update_columns(
+      stock_quantity: left,
+      status: left.zero? ? "on_order" : status,
+      updated_at: Time.current
+    )
+  end
+
   private
 
   # FR-3.4: унікальний артикул, наприклад TD-AB12CD

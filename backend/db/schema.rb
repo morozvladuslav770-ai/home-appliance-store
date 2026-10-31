@@ -10,9 +10,39 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_31_200000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_31_210000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "order_items", force: :cascade do |t|
+    t.bigint "order_id", null: false
+    t.bigint "product_id", null: false
+    t.string "name", null: false
+    t.string "sku"
+    t.decimal "unit_price", precision: 12, scale: 2, null: false
+    t.integer "quantity", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["order_id"], name: "index_order_items_on_order_id"
+    t.index ["product_id"], name: "index_order_items_on_product_id"
+  end
+
+  create_table "orders", force: :cascade do |t|
+    t.string "customer_name", null: false
+    t.string "email", null: false
+    t.string "phone", null: false
+    t.string "city", null: false
+    t.string "delivery_method", null: false
+    t.string "address"
+    t.string "payment_method", null: false
+    t.string "status", default: "processing", null: false
+    t.decimal "total", precision: 12, scale: 2, default: "0.0", null: false
+    t.text "comment"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["email"], name: "index_orders_on_email"
+    t.index ["status"], name: "index_orders_on_status"
+  end
 
   create_table "products", force: :cascade do |t|
     t.string "name", null: false
@@ -33,4 +63,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_200000) do
     t.index ["sku"], name: "index_products_on_sku", unique: true
     t.index ["status"], name: "index_products_on_status"
   end
+
+  add_foreign_key "order_items", "orders"
+  add_foreign_key "order_items", "products"
 end
