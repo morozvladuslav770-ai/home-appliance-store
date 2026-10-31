@@ -1,13 +1,6 @@
+import { Link, useNavigate } from "react-router-dom";
 import { CATEGORIES } from "../data";
-
-type Props = {
-  query: string;
-  onQuery: (value: string) => void;
-  onSearchSubmit: () => void;
-  activeCategory: string | null;
-  onCategory: (name: string | null) => void;
-  cartCount: number;
-};
+import { useCart, useShop } from "../shop/context";
 
 const icon = {
   fill: "none",
@@ -17,18 +10,27 @@ const icon = {
   strokeLinejoin: "round" as const,
 };
 
-export default function Header({
-  query,
-  onQuery,
-  onSearchSubmit,
-  activeCategory,
-  onCategory,
-  cartCount,
-}: Props) {
+export default function Header() {
+  const { filters, setFilters } = useShop();
+  const { count } = useCart();
+  const navigate = useNavigate();
+
+  const goToCatalog = () => navigate("/", { state: { scroll: "all" } });
+
+  const toggleCategory = (name: string) => {
+    const next = filters.category === name ? null : name;
+    setFilters((f) => ({ ...f, category: next }));
+    if (next) goToCatalog();
+  };
+
   return (
     <header className="header">
       <div className="header__top container">
-        <a className="logo" href="#top" onClick={() => onCategory(null)}>
+        <Link
+          className="logo"
+          to="/"
+          onClick={() => setFilters((f) => ({ ...f, category: null }))}
+        >
           <svg viewBox="0 0 40 40" width="38" height="38" aria-hidden="true">
             <rect width="40" height="40" rx="9" fill="var(--cobalt)" />
             <path
@@ -41,14 +43,14 @@ export default function Header({
             <rect x="16" y="21" width="8" height="10" rx="1.5" fill="var(--amber)" />
           </svg>
           <span>ТехноДім</span>
-        </a>
+        </Link>
 
         <form
           className="search"
           role="search"
           onSubmit={(e) => {
             e.preventDefault();
-            onSearchSubmit();
+            goToCatalog();
           }}
         >
           <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" {...icon}>
@@ -57,8 +59,8 @@ export default function Header({
           </svg>
           <input
             type="search"
-            value={query}
-            onChange={(e) => onQuery(e.target.value)}
+            value={filters.query}
+            onChange={(e) => setFilters((f) => ({ ...f, query: e.target.value }))}
             placeholder="Пошук: холодильник, пральна машина…"
             aria-label="Пошук товарів"
           />
@@ -84,19 +86,19 @@ export default function Header({
             </svg>
             <span>Кабінет</span>
           </a>
-          <a className="action action--cart" href="#cart">
+          <Link className="action action--cart" to="/cart">
             <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" {...icon}>
               <path d="M3 4h2l2.4 11h10.2L20 7H6.2" />
               <circle cx="9" cy="19" r="1.4" />
               <circle cx="17" cy="19" r="1.4" />
             </svg>
             <span>Кошик</span>
-            {cartCount > 0 && (
-              <b className="badge" aria-label={`Товарів у кошику: ${cartCount}`}>
-                {cartCount}
+            {count > 0 && (
+              <b className="badge" aria-label={`Товарів у кошику: ${count}`}>
+                {count}
               </b>
             )}
-          </a>
+          </Link>
         </nav>
       </div>
 
@@ -106,11 +108,9 @@ export default function Header({
             <li key={c.name}>
               <button
                 type="button"
-                className={activeCategory === c.name ? "is-active" : ""}
-                aria-pressed={activeCategory === c.name}
-                onClick={() =>
-                  onCategory(activeCategory === c.name ? null : c.name)
-                }
+                className={filters.category === c.name ? "is-active" : ""}
+                aria-pressed={filters.category === c.name}
+                onClick={() => toggleCategory(c.name)}
               >
                 {c.name}
               </button>

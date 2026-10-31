@@ -8,10 +8,9 @@ type Props = {
   shown: Product[];
   filters: Filters;
   onChange: (next: Filters) => void;
-  onAdd: (product: Product) => void;
 };
 
-export default function Catalog({ allProducts, shown, filters, onChange, onAdd }: Props) {
+export default function Catalog({ allProducts, shown, filters, onChange }: Props) {
   return (
     <section className="section container" id="all" aria-labelledby="all-title">
       <div className="section__head">
@@ -44,7 +43,7 @@ export default function Catalog({ allProducts, shown, filters, onChange, onAdd }
           ) : (
             <div className="products products--3">
               {shown.map((p) => (
-                <ProductCard key={p.id} product={p} onAdd={onAdd} />
+                <ProductCard key={p.id} product={p} />
               ))}
             </div>
           )}
