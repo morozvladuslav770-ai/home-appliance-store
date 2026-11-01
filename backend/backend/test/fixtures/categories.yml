@@ -1,0 +1,21 @@
+fridges:
+  name: Холодильники
+  position: 0
+washers:
+  name: Пральні машини
+  position: 1
+cookers:
+  name: Плити
+  position: 2
+dishwashers:
+  name: Посудомийні машини
+  position: 3
+hoods:
+  name: Витяжки
+  position: 4
+ovens:
+  name: Духові шафи
+  position: 5
+freezers:
+  name: Морозильні камери
+  position: 6

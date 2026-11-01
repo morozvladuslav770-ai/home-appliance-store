@@ -1,0 +1,56 @@
+# Демонстраційний каталог. Скрипт ідемпотентний: повторний запуск не створює дублів.
+[
+  "Холодильники", "Пральні машини", "Плити", "Посудомийні машини",
+  "Витяжки", "Духові шафи", "Морозильні камери"
+].each { |name| Category.find_or_create_by!(name: name) }
+
+PRODUCTS = [
+  ["Холодильник двокамерний, 185 см", "Холодильники", "Samsung", "A", 28_999, 4.7, 12, "No Frost, об'єм 360 л, інверторний компресор."],
+  ["Холодильник Side-by-Side, 177 см", "Холодильники", "LG", "A", 42_999, 4.8, 5, "Дві двері, диспенсер води, об'єм 560 л."],
+  ["Холодильник з нижньою морозилкою", "Холодильники", "Bosch", "B", 24_499, 4.5, 8, "Об'єм 320 л, зона свіжості, тихий компресор."],
+  ["Пральна машина 8 кг, фронтальна", "Пральні машини", "Bosch", "B", 17_499, 4.6, 20, "1400 об/хв, 15 програм, захист від протікання."],
+  ["Пральна машина 7 кг з сушінням", "Пральні машини", "Samsung", "A", 21_999, 4.4, 7, "Інвертор, паровий режим, сушіння 4 кг."],
+  ["Пральна машина вузька, 6 кг", "Пральні машини", "Candy", "C", 11_299, 4.1, 15, "Глибина 40 см, 1000 об/хв, 16 програм."],
+  ["Плита комбінована, 60 см", "Плити", "Gorenje", "A", 14_299, 4.3, 9, "4 конфорки, електрична духовка 65 л, гриль."],
+  ["Плита індукційна, 60 см", "Плити", "Electrolux", "A", 19_799, 4.6, 4, "Індукційна панель, духовка 72 л, конвекція."],
+  ["Посудомийна машина, 45 см", "Посудомийні машини", "Bosch", "A", 15_999, 4.7, 11, "10 комплектів посуду, 6 програм, напівзавантаження."],
+  ["Посудомийна машина, 60 см", "Посудомийні машини", "Beko", "B", 13_799, 4.2, 0, "13 комплектів посуду, швидка програма 30 хв."],
+  ["Витяжка похила, 60 см", "Витяжки", "Pyramida", nil, 6_799, 4.0, 14, "Продуктивність 600 м³/год, сенсорне керування."],
+  ["Духова шафа електрична, 70 л", "Духові шафи", "Electrolux", "A", 12_899, 4.5, 6, "Конвекція, 9 режимів, телескопічні напрямні."],
+  ["Морозильна камера, 5 шухляд", "Морозильні камери", "Liebherr", "B", 19_499, 4.8, 3, "Об'єм 240 л, швидке заморожування, No Frost."]
+].freeze
+
+PRODUCTS.each_with_index do |(name, category, brand, energy_class, price, rating, stock, description), i|
+  Product.find_or_create_by!(name: name) do |product|
+    product.category = category
+    product.brand = brand
+    product.energy_class = energy_class
+    product.price = price
+    product.rating = rating
+    product.stock_quantity = stock
+    product.status = stock.zero? ? :on_order : :in_stock
+    product.description = description
+    product.created_at = (PRODUCTS.size - i).days.ago
+  end
+end
+
+puts "Товарів у каталозі: #{Product.count}"
+
+# Демонстраційні акаунти (пароль для всіх: Password1). У production не створюються.
+unless Rails.env.production?
+  [
+    [ "admin@technodim.test", "Адміністратор системи", "admin" ],
+    [ "manager@technodim.test", "Менеджер магазину", "manager" ],
+    [ "buyer@technodim.test", "Іван Покупець", "buyer" ]
+  ].each do |email, full_name, role|
+    User.find_or_create_by!(email: email) do |user|
+      user.full_name = full_name
+      user.phone = "+380501234567"
+      user.password = user.password_confirmation = "Password1"
+      user.role = role
+      user.email_confirmed_at = Time.current
+    end
+  end
+
+  puts "Демо-акаунти: admin@ / manager@ / buyer@technodim.test, пароль Password1"
+end
