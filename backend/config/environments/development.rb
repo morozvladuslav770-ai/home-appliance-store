@@ -31,6 +31,9 @@ Rails.application.configure do
 
   # Don't care if the mailer can't send.
   config.action_mailer.raise_delivery_errors = false
+  # Листи пишуться у файли tmp/mails (посилання підтвердження й скидання пароля — всередині)
+  config.action_mailer.delivery_method = :file
+  config.action_mailer.file_settings = { location: Rails.root.join("tmp/mails").to_s }
 
   # Make template changes take effect immediately.
   config.action_mailer.perform_caching = false

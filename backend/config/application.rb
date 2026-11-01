@@ -28,5 +28,8 @@ module Backend
     # Middleware like session, flash, cookies can be added back manually.
     # Skip views, helpers and assets when generating a new resource.
     config.api_only = true
+
+    # Адреса фронтенду для посилань у листах (підтвердження email, скидання пароля)
+    config.x.frontend_url = ENV.fetch("FRONTEND_URL", "http://localhost:5173/home-appliance-store")
   end
 end

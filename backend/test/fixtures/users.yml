@@ -1,0 +1,41 @@
+<% require "bcrypt" %>
+<% digest = BCrypt::Password.create("Password1", cost: 4) %>
+
+buyer:
+  full_name: Іван Покупець
+  email: buyer@example.com
+  phone: "+380501111111"
+  password_digest: <%= digest %>
+  role: buyer
+  email_confirmed_at: <%= 1.day.ago.to_fs(:db) %>
+
+other_buyer:
+  full_name: Олена Інша
+  email: other@example.com
+  phone: "+380502222222"
+  password_digest: <%= digest %>
+  role: buyer
+  email_confirmed_at: <%= 1.day.ago.to_fs(:db) %>
+
+manager:
+  full_name: Марія Менеджер
+  email: manager@example.com
+  phone: "+380503333333"
+  password_digest: <%= digest %>
+  role: manager
+  email_confirmed_at: <%= 1.day.ago.to_fs(:db) %>
+
+admin:
+  full_name: Андрій Адмін
+  email: admin@example.com
+  phone: "+380504444444"
+  password_digest: <%= digest %>
+  role: admin
+  email_confirmed_at: <%= 1.day.ago.to_fs(:db) %>
+
+unconfirmed:
+  full_name: Петро Непідтверджений
+  email: new@example.com
+  phone: "+380505555555"
+  password_digest: <%= digest %>
+  role: buyer

@@ -30,3 +30,22 @@ PRODUCTS.each_with_index do |(name, category, brand, energy_class, price, rating
 end
 
 puts "Товарів у каталозі: #{Product.count}"
+
+# Демонстраційні акаунти (пароль для всіх: Password1). У production не створюються.
+unless Rails.env.production?
+  [
+    [ "admin@technodim.test", "Адміністратор системи", "admin" ],
+    [ "manager@technodim.test", "Менеджер магазину", "manager" ],
+    [ "buyer@technodim.test", "Іван Покупець", "buyer" ]
+  ].each do |email, full_name, role|
+    User.find_or_create_by!(email: email) do |user|
+      user.full_name = full_name
+      user.phone = "+380501234567"
+      user.password = user.password_confirmation = "Password1"
+      user.role = role
+      user.email_confirmed_at = Time.current
+    end
+  end
+
+  puts "Демо-акаунти: admin@ / manager@ / buyer@technodim.test, пароль Password1"
+end

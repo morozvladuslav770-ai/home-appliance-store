@@ -1,6 +1,7 @@
+import { api, type FieldErrors } from "./api";
 import type { CartItem } from "./shop/context";
 
-export const API_BASE = "http://localhost:3000/api";
+export type { FieldErrors };
 
 export type DeliveryMethod = "courier" | "carrier_branch" | "pickup";
 export type PaymentMethod = "card_online" | "cash_on_delivery" | "installments";
@@ -66,6 +67,7 @@ export type OrderResponse = {
   delivery_method: DeliveryMethod;
   payment_method: PaymentMethod;
   created_at: string;
+  cancellable: boolean;
   items: {
     product_id: number;
     name: string;
@@ -75,35 +77,23 @@ export type OrderResponse = {
   }[];
 };
 
-export type FieldErrors = Record<string, string[]>;
-
 export type SubmitResult =
   | { ok: true; order: OrderResponse }
   | { ok: false; errors: FieldErrors };
 
-export async function submitOrder(form: OrderForm, items: CartItem[]): Promise<SubmitResult> {
-  try {
-    const response = await fetch(`${API_BASE}/orders`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        order: form,
-        items: items.map((i) => ({ product_id: i.product.id, quantity: i.qty })),
-      }),
-    });
-    const data = await response.json();
+export async function submitOrder(
+  form: OrderForm,
+  items: CartItem[],
+  token: string | null,
+): Promise<SubmitResult> {
+  const result = await api<OrderResponse>("/orders", {
+    method: "POST",
+    token,
+    body: {
+      order: form,
+      items: items.map((i) => ({ product_id: i.product.id, quantity: i.qty })),
+    },
+  });
 
-    if (response.ok) return { ok: true, order: data as OrderResponse };
-    return {
-      ok: false,
-      errors: (data.errors as FieldErrors | undefined) ?? {
-        base: ["Не вдалося оформити замовлення. Спробуйте ще раз."],
-      },
-    };
-  } catch {
-    return {
-      ok: false,
-      errors: { base: ["Не вдалося зв'язатися із сервером. Перевірте з'єднання й спробуйте ще раз."] },
-    };
-  }
+  return result.ok ? { ok: true, order: result.data } : { ok: false, errors: result.errors };
 }

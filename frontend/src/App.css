@@ -1387,3 +1387,163 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ---------- Вхід, реєстрація, кабінет ---------- */
+.auth {
+  display: grid;
+  gap: 20px;
+  max-width: 480px;
+  margin-inline: auto;
+  align-content: start;
+}
+
+.auth__hint {
+  color: var(--muted);
+}
+
+.auth__links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px 16px;
+  font-size: 15px;
+}
+
+.auth__links a,
+.form-errors a {
+  font-weight: 600;
+  color: var(--cobalt);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.alert-ok {
+  padding: 14px 18px;
+  font-size: 15px;
+  color: #0b6b47;
+  background: #dff5ea;
+  border-left: 4px solid var(--mint);
+  border-radius: 4px 12px 12px 4px;
+}
+
+.form-errors p {
+  margin: 0;
+}
+
+.status--pending_payment {
+  color: #8a5a00;
+  background: #fdeccd;
+}
+
+.status--processing,
+.status--shipped {
+  color: #153aa6;
+  background: #e3ebff;
+}
+
+.status--paid,
+.status--delivered {
+  color: #0b6b47;
+  background: #dff5ea;
+}
+
+.status--cancelled {
+  color: #5d6b76;
+  background: var(--line);
+}
+
+.account {
+  display: grid;
+  grid-template-columns: 320px minmax(0, 1fr);
+  gap: 28px;
+  align-items: start;
+}
+
+.profile h2 {
+  font: 600 20px/1.2 var(--display);
+}
+
+.profile dl {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  font-size: 15px;
+}
+
+.profile dt {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.profile dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.account__title {
+  margin-bottom: 16px;
+  font: 600 20px/1.2 var(--display);
+}
+
+.orders {
+  display: grid;
+  gap: 12px;
+}
+
+.order {
+  display: grid;
+  gap: 10px;
+  padding: 18px 20px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+}
+
+.order__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+}
+
+.order__head time {
+  margin-left: auto;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.order__items {
+  display: grid;
+  gap: 4px;
+  font-size: 15px;
+}
+
+.order__items a:hover {
+  color: var(--cobalt);
+  text-decoration: underline;
+}
+
+.order__items small,
+.order__meta {
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.order__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+}
+
+.order__foot strong {
+  font-size: 18px;
+}
+
+@media (max-width: 900px) {
+  .account {
+    grid-template-columns: 1fr;
+  }
+}

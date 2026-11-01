@@ -63,6 +63,17 @@ class Product < ApplicationRecord
     )
   end
 
+  # Повертає залишок (скасування замовлення); якщо товар знову є, він знову «в наявності»
+  def release!(quantity)
+    return if quantity.zero? || discontinued?
+
+    update_columns(
+      stock_quantity: stock_quantity + quantity,
+      status: "in_stock",
+      updated_at: Time.current
+    )
+  end
+
   private
 
   # FR-3.4: унікальний артикул, наприклад TD-AB12CD

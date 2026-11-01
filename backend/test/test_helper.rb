@@ -13,3 +13,11 @@ module ActiveSupport
     # Add more helper methods to be used by all tests here...
   end
 end
+
+class ActionDispatch::IntegrationTest
+  PASSWORD = "Password1".freeze
+
+  def auth_headers(user, kind: :session)
+    { "Authorization" => "Bearer #{user.generate_token_for(kind)}" }
+  end
+end

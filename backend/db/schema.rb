@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_31_210000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_31_220100) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -23,6 +23,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_210000) do
     t.integer "quantity", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "reserved_quantity", default: 0, null: false
     t.index ["order_id"], name: "index_order_items_on_order_id"
     t.index ["product_id"], name: "index_order_items_on_product_id"
   end
@@ -40,8 +41,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_210000) do
     t.text "comment"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "user_id"
     t.index ["email"], name: "index_orders_on_email"
     t.index ["status"], name: "index_orders_on_status"
+    t.index ["user_id"], name: "index_orders_on_user_id"
   end
 
   create_table "products", force: :cascade do |t|
@@ -64,6 +67,22 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_210000) do
     t.index ["status"], name: "index_products_on_status"
   end
 
+  create_table "users", force: :cascade do |t|
+    t.string "full_name", null: false
+    t.string "email", null: false
+    t.string "phone"
+    t.string "password_digest", null: false
+    t.string "role", default: "buyer", null: false
+    t.datetime "email_confirmed_at"
+    t.integer "failed_attempts", default: 0, null: false
+    t.datetime "locked_until"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["role"], name: "index_users_on_role"
+  end
+
   add_foreign_key "order_items", "orders"
   add_foreign_key "order_items", "products"
+  add_foreign_key "orders", "users"
 end

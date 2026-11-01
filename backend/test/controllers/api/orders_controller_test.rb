@@ -13,8 +13,11 @@ class Api::OrdersControllerTest < ActionDispatch::IntegrationTest
     }.merge(overrides)
   end
 
-  def post_order(items, overrides = {})
-    post api_orders_url, params: { order: order_attrs(overrides), items: items }, as: :json
+  def post_order(items, overrides = {}, user: users(:buyer))
+    post api_orders_url,
+         params: { order: order_attrs(overrides), items: items },
+         headers: user ? auth_headers(user) : {},
+         as: :json
   end
 
   test "створює замовлення, рахує суму за цінами з бази та зменшує склад" do
@@ -41,6 +44,7 @@ class Api::OrdersControllerTest < ActionDispatch::IntegrationTest
     fridge = products(:fridge)
     post api_orders_url,
          params: { order: order_attrs, items: [ { product_id: fridge.id, quantity: 1, unit_price: 1 } ] },
+         headers: auth_headers(users(:buyer)),
          as: :json
     assert_response :created
     assert_equal fridge.price, OrderItem.last.unit_price
@@ -93,5 +97,69 @@ class Api::OrdersControllerTest < ActionDispatch::IntegrationTest
     post_order([ { product_id: fridge.id, quantity: 5 } ])
     assert_response :created
     assert_equal "on_order", fridge.reload.status
+  end
+
+  test "без входу замовлення не створюється" do
+    assert_no_difference "Order.count" do
+      post_order([ { product_id: products(:fridge).id, quantity: 1 } ], {}, user: nil)
+    end
+    assert_response :unauthorized
+  end
+
+  test "замовлення прив'язується до поточного користувача" do
+    post_order([ { product_id: products(:fridge).id, quantity: 1 } ])
+    assert_equal users(:buyer), Order.last.user
+  end
+
+  test "історія містить лише власні замовлення" do
+    post_order([ { product_id: products(:fridge).id, quantity: 1 } ])
+    post_order([ { product_id: products(:washer).id, quantity: 1 } ], {}, user: users(:other_buyer))
+
+    get api_orders_url, headers: auth_headers(users(:buyer))
+    assert_response :success
+    assert_equal 1, response.parsed_body.size
+    assert_equal users(:buyer).id, Order.find(response.parsed_body.first["id"]).user_id
+  end
+
+  test "історія потребує входу" do
+    get api_orders_url
+    assert_response :unauthorized
+  end
+
+  test "скасування повертає товар на склад" do
+    fridge = products(:fridge)
+    post_order([ { product_id: fridge.id, quantity: 5 } ])
+    assert_equal "on_order", fridge.reload.status
+    order_id = response.parsed_body["id"]
+
+    patch cancel_api_order_url(order_id), headers: auth_headers(users(:buyer))
+    assert_response :success
+    assert_equal "cancelled", response.parsed_body["status"]
+    assert_equal 5, fridge.reload.stock_quantity
+    assert_equal "in_stock", fridge.status
+  end
+
+  test "скасування товару під замовлення не змінює склад" do
+    washer = products(:washer)
+    post_order([ { product_id: washer.id, quantity: 2 } ])
+    patch cancel_api_order_url(response.parsed_body["id"]), headers: auth_headers(users(:buyer))
+    assert_response :success
+    assert_equal 0, washer.reload.stock_quantity
+  end
+
+  test "не можна скасувати після спливу часу" do
+    post_order([ { product_id: products(:fridge).id, quantity: 1 } ])
+    order_id = response.parsed_body["id"]
+
+    travel 25.hours do
+      patch cancel_api_order_url(order_id), headers: auth_headers(users(:buyer))
+      assert_response :unprocessable_entity
+    end
+  end
+
+  test "не можна скасувати чуже замовлення" do
+    post_order([ { product_id: products(:fridge).id, quantity: 1 } ])
+    patch cancel_api_order_url(response.parsed_body["id"]), headers: auth_headers(users(:other_buyer))
+    assert_response :not_found
   end
 end

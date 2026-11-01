@@ -24,6 +24,9 @@ class Order < ApplicationRecord
     installments: "installments"
   }, prefix: :payment, validate: { message: "оберіть спосіб оплати" }
 
+  CANCEL_WINDOW = 24.hours # FR-4.9: скасувати можна протягом обмеженого часу
+
+  belongs_to :user, optional: true
   has_many :order_items, dependent: :destroy
 
   validates :customer_name, presence: { message: "вкажіть ім'я та прізвище" }
@@ -61,7 +64,8 @@ class Order < ApplicationRecord
         else
           order.order_items.build(
             product: product, name: product.name, sku: product.sku,
-            unit_price: product.price, quantity: qty
+            unit_price: product.price, quantity: qty,
+            reserved_quantity: product.in_stock? ? qty : 0
           )
         end
       end
@@ -75,12 +79,35 @@ class Order < ApplicationRecord
 
       if valid && problems.empty?
         order.save!
-        order.order_items.each { |item| item.product.reserve!(item.quantity) }
+        order.order_items.each { |item| item.product.reserve!(item.reserved_quantity) }
       else
         raise ActiveRecord::Rollback
       end
     end
 
     order
+  end
+
+  def cancellable?
+    (pending_payment? || processing?) && created_at > CANCEL_WINDOW.ago
+  end
+
+  # Скасовує замовлення й повертає списаний залишок на склад
+  def cancel!
+    done = false
+
+    transaction do
+      lock!
+      if cancellable?
+        order_items.includes(:product).each do |item|
+          item.product.lock!
+          item.product.release!(item.reserved_quantity)
+        end
+        cancelled!
+        done = true
+      end
+    end
+
+    done
   end
 end

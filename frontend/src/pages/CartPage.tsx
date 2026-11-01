@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { useAuth } from "../auth/context";
 import { formatPrice, kindOf, STATUS_LABEL } from "../data";
 import { maxQty } from "../shop/cart";
 import { useCart } from "../shop/context";
@@ -7,6 +8,7 @@ import QtyStepper from "../components/QtyStepper";
 
 export default function CartPage() {
   const { items, count, total, setQty, remove, clear } = useCart();
+  const { user } = useAuth();
 
   const blocked = items.some((i) => maxQty(i.product) === 0);
 
@@ -110,9 +112,16 @@ export default function CartPage() {
               <p className="summary__hint">Видаліть з кошика недоступні товари.</p>
             </>
           ) : (
-            <Link className="btn btn--primary btn--block" to="/checkout">
-              Оформити замовлення
-            </Link>
+            <>
+              <Link className="btn btn--primary btn--block" to="/checkout">
+                Оформити замовлення
+              </Link>
+              {!user && (
+                <p className="summary__hint">
+                  Для оформлення потрібен вхід. Кошик збережеться.
+                </p>
+              )}
+            </>
           )}
         </aside>
       </div>

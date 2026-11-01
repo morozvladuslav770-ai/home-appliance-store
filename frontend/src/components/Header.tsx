@@ -1,5 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { CATEGORIES } from "../data";
+import { useAuth } from "../auth/context";
 import { useCart, useShop } from "../shop/context";
 
 const icon = {
@@ -13,6 +14,7 @@ const icon = {
 export default function Header() {
   const { filters, setFilters } = useShop();
   const { count } = useCart();
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   const goToCatalog = () => navigate("/", { state: { scroll: "all" } });
@@ -79,13 +81,13 @@ export default function Header() {
             </svg>
             <span>Бажане</span>
           </a>
-          <a className="action" href="#account">
+          <Link className="action" to={user ? "/account" : "/login"}>
             <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" {...icon}>
               <circle cx="12" cy="8" r="4" />
               <path d="M4 20c1-4 4-6 8-6s7 2 8 6" />
             </svg>
-            <span>Кабінет</span>
-          </a>
+            <span>{user ? user.full_name.split(" ")[0] : "Увійти"}</span>
+          </Link>
           <Link className="action action--cart" to="/cart">
             <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" {...icon}>
               <path d="M3 4h2l2.4 11h10.2L20 7H6.2" />

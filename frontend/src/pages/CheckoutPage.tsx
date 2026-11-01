@@ -1,5 +1,7 @@
-import { useState, type FormEvent, type ReactNode } from "react";
+import { useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../auth/context";
+import Field from "../components/Field";
 import { formatPrice } from "../data";
 import {
   DELIVERY_LABEL,
@@ -14,29 +16,17 @@ import {
 import { maxQty } from "../shop/cart";
 import { useCart, useShop } from "../shop/context";
 
-function Field({
-  label,
-  error,
-  children,
-}: {
-  label: string;
-  error?: string[];
-  children: ReactNode;
-}) {
-  return (
-    <label className={`field ${error ? "field--bad" : ""}`}>
-      <span>{label}</span>
-      {children}
-      {error && <small className="field__error">{error[0]}</small>}
-    </label>
-  );
-}
-
 export default function CheckoutPage() {
   const { items, count, total, clear } = useCart();
   const { demo } = useShop();
+  const { user, token } = useAuth();
   const navigate = useNavigate();
-  const [form, setForm] = useState<OrderForm>(EMPTY_ORDER_FORM);
+  const [form, setForm] = useState<OrderForm>({
+    ...EMPTY_ORDER_FORM,
+    customer_name: user?.full_name ?? "",
+    email: user?.email ?? "",
+    phone: user?.phone ?? "",
+  });
   const [errors, setErrors] = useState<FieldErrors>({});
   const [sending, setSending] = useState(false);
 
@@ -61,7 +51,7 @@ export default function CheckoutPage() {
     event.preventDefault();
     setSending(true);
     setErrors({});
-    const result = await submitOrder(form, items);
+    const result = await submitOrder(form, items, token);
     setSending(false);
 
     if (result.ok) {
