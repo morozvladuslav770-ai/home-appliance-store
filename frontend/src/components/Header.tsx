@@ -1,5 +1,4 @@
 import { Link, useNavigate } from "react-router-dom";
-import { CATEGORIES } from "../data";
 import { useAuth } from "../auth/context";
 import { useCart, useShop } from "../shop/context";
 
@@ -12,7 +11,7 @@ const icon = {
 };
 
 export default function Header() {
-  const { filters, setFilters } = useShop();
+  const { filters, setFilters, categories } = useShop();
   const { count } = useCart();
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -81,6 +80,17 @@ export default function Header() {
             </svg>
             <span>Бажане</span>
           </a>
+          {user?.role !== "buyer" && user && (
+            <Link className="action" to="/admin">
+              <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" {...icon}>
+                <rect x="4" y="4" width="7" height="7" rx="1.5" />
+                <rect x="13" y="4" width="7" height="7" rx="1.5" />
+                <rect x="4" y="13" width="7" height="7" rx="1.5" />
+                <rect x="13" y="13" width="7" height="7" rx="1.5" />
+              </svg>
+              <span>Панель</span>
+            </Link>
+          )}
           <Link className="action" to={user ? "/account" : "/login"}>
             <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" {...icon}>
               <circle cx="12" cy="8" r="4" />
@@ -106,7 +116,7 @@ export default function Header() {
 
       <nav className="catnav" aria-label="Категорії">
         <ul className="container">
-          {CATEGORIES.map((c) => (
+          {categories.map((c) => (
             <li key={c.name}>
               <button
                 type="button"

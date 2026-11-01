@@ -4,6 +4,8 @@ Rails.application.routes.draw do
       get :facets, on: :collection
     end
 
+    resources :categories, only: [ :index ]
+
     resources :orders, only: [ :index, :create ] do
       patch :cancel, on: :member
     end
@@ -16,6 +18,10 @@ Rails.application.routes.draw do
 
     namespace :admin do
       resources :users, only: [ :index, :update ]
+      resources :products, only: [ :index, :create, :update, :destroy ]
+      resources :categories, only: [ :index, :create, :update, :destroy ]
+      resources :orders, only: [ :index, :update ]
+      resources :audit_logs, only: [ :index ]
     end
   end
 end

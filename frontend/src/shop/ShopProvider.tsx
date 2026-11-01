@@ -1,20 +1,20 @@
-import { useEffect, useMemo, useState, type ReactNode } from "react";
-import { DEMO_PRODUCTS, type Product } from "../data";
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
+import { API_BASE } from "../api";
+import { CATEGORIES, DEMO_PRODUCTS, kindOf, type CategoryItem, type Product } from "../data";
 import { EMPTY_FILTERS, type Filters } from "../filters";
 import { loadCart, maxQty, saveCart } from "./cart";
 import { CartContext, ShopContext, type CartItem, type CartState, type ShopState } from "./context";
 
-const API_URL = "http://localhost:3000/api/products";
-
 export default function ShopProvider({ children }: { children: ReactNode }) {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [categories, setCategories] = useState<CategoryItem[]>(CATEGORIES);
   const [demo, setDemo] = useState(false);
   const [filters, setFilters] = useState<Filters>(EMPTY_FILTERS);
   const [stored, setStored] = useState<CartItem[]>(loadCart);
 
-  useEffect(() => {
-    fetch(API_URL)
+  const load = useCallback(() => {
+    fetch(`${API_BASE}/products`)
       .then((response) => {
         if (!response.ok) {
           throw new Error("Не вдалося завантажити товари");
@@ -27,6 +27,7 @@ export default function ShopProvider({ children }: { children: ReactNode }) {
           setDemo(true);
         } else {
           setProducts(data);
+          setDemo(false);
         }
       })
       .catch(() => {
@@ -34,15 +35,29 @@ export default function ShopProvider({ children }: { children: ReactNode }) {
         setDemo(true);
       })
       .finally(() => setLoading(false));
+
+    // Категорії керуються в адмін-панелі; якщо сервер не відповів, лишається запасний список
+    fetch(`${API_BASE}/categories`)
+      .then((response) => (response.ok ? response.json() : Promise.reject()))
+      .then((data: { name: string }[]) => {
+        if (data.length > 0) {
+          setCategories(data.map((c) => ({ name: c.name, kind: kindOf(c.name) })));
+        }
+      })
+      .catch(() => {});
   }, []);
+
+  useEffect(() => {
+    load();
+  }, [load]);
 
   useEffect(() => {
     saveCart(stored);
   }, [stored]);
 
   const shop = useMemo<ShopState>(
-    () => ({ products, loading, demo, filters, setFilters }),
-    [products, loading, demo, filters],
+    () => ({ products, categories, loading, demo, filters, setFilters, reload: load }),
+    [products, categories, loading, demo, filters, load],
   );
 
   // Актуальні ціни й статуси підтягуються з каталогу, у сховищі лишається знімок

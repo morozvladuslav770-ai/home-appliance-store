@@ -1,4 +1,5 @@
-import { CATEGORIES, type Product } from "../data";
+import type { Product } from "../data";
+import { useShop } from "../shop/context";
 import { activeCount, EMPTY_FILTERS, type Filters } from "../filters";
 
 type Props = {
@@ -14,6 +15,7 @@ function toggle(list: string[], value: string) {
 }
 
 export default function FilterPanel({ products, filters, onChange }: Props) {
+  const { categories } = useShop();
   const brands = [...new Set(products.map((p) => p.brand).filter((b): b is string => !!b))].sort();
   const count = activeCount(filters);
   const set = (patch: Partial<Filters>) => onChange({ ...filters, ...patch });
@@ -32,7 +34,7 @@ export default function FilterPanel({ products, filters, onChange }: Props) {
               Уся техніка
             </button>
           </li>
-          {CATEGORIES.map((c) => (
+          {categories.map((c) => (
             <li key={c.name}>
               <button
                 type="button"

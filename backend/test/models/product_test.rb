@@ -40,4 +40,31 @@ class ProductTest < ActiveSupport::TestCase
     prices = Product.sorted_by("price_asc").pluck(:price)
     assert_equal prices.sort, prices
   end
+
+  test "невідомий статус дає помилку валідації, а не виняток" do
+    product = build_product(status: "unknown")
+    assert_not product.valid?
+    assert product.errors[:status].any?
+  end
+
+  test "порожній енергоклас і фото зберігаються як NULL" do
+    product = build_product(energy_class: " ", image_url: "")
+    product.save!
+    assert_nil product.energy_class
+    assert_nil product.image_url
+  end
+
+  test "товар, що є в замовленнях, видалити не можна" do
+    Order.place(
+      { customer_name: "Іван", email: "ivan@example.com", phone: "+380501234567", city: "Київ",
+        delivery_method: "courier", address: "вул. Тестова, 1", payment_method: "cash_on_delivery" },
+      [ { product_id: products(:fridge).id, quantity: 1 } ]
+    )
+    assert_not products(:fridge).destroy
+    assert products(:fridge).errors[:base].any?
+  end
+
+  test "товар без замовлень видалити можна" do
+    assert products(:old_oven).destroy
+  end
 end

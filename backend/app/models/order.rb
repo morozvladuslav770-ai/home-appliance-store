@@ -92,22 +92,59 @@ class Order < ApplicationRecord
     (pending_payment? || processing?) && created_at > CANCEL_WINDOW.ago
   end
 
-  # Скасовує замовлення й повертає списаний залишок на склад
+  # Дозволені переходи статусів для менеджера (FR-4.9)
+  TRANSITIONS = {
+    "pending_payment" => %w[paid cancelled],
+    "processing" => %w[paid shipped cancelled],
+    "paid" => %w[shipped cancelled],
+    "shipped" => %w[delivered],
+    "delivered" => [],
+    "cancelled" => []
+  }.freeze
+
+  def next_statuses
+    TRANSITIONS.fetch(status)
+  end
+
+  # Скасування покупцем: лише протягом CANCEL_WINDOW. Повертає списаний залишок на склад
   def cancel!
     done = false
 
     transaction do
       lock!
       if cancellable?
-        order_items.includes(:product).each do |item|
-          item.product.lock!
-          item.product.release!(item.reserved_quantity)
-        end
+        restock!
         cancelled!
         done = true
       end
     end
 
     done
+  end
+
+  # Зміна статусу менеджером. Скасування теж повертає товар на склад
+  def change_status!(new_status)
+    new_status = new_status.to_s
+    done = false
+
+    transaction do
+      lock!
+      if next_statuses.include?(new_status)
+        restock! if new_status == "cancelled"
+        update!(status: new_status)
+        done = true
+      end
+    end
+
+    done
+  end
+
+  private
+
+  def restock!
+    order_items.includes(:product).each do |item|
+      item.product.lock!
+      item.product.release!(item.reserved_quantity)
+    end
   end
 end

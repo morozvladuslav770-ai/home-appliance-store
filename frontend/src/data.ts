@@ -22,10 +22,14 @@ export type ApplianceKind =
   | "dishwasher"
   | "hood"
   | "oven"
-  | "freezer";
+  | "freezer"
+  | "generic";
 
-// Категорії з розділу 3.3 СРС (FR-3.1)
-export const CATEGORIES: { name: string; kind: ApplianceKind }[] = [
+export type CategoryItem = { name: string; kind: ApplianceKind };
+
+// Початковий набір категорій (розділ 3.3 СРС). Далі їх керує менеджер в адмін-панелі,
+// а магазин завантажує актуальний список з API; цей — запасний, коли сервер недоступний.
+export const CATEGORIES: CategoryItem[] = [
   { name: "Холодильники", kind: "fridge" },
   { name: "Пральні машини", kind: "washer" },
   { name: "Плити", kind: "cooker" },
@@ -36,7 +40,7 @@ export const CATEGORIES: { name: string; kind: ApplianceKind }[] = [
 ];
 
 export function kindOf(category: string): ApplianceKind {
-  return CATEGORIES.find((c) => c.name === category)?.kind ?? "fridge";
+  return CATEGORIES.find((c) => c.name === category)?.kind ?? "generic";
 }
 
 // Демонстраційні товари — показуються, поки API недоступне або порожнє.

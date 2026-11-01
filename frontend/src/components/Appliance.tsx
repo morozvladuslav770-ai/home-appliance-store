@@ -68,6 +68,14 @@ export default function Appliance({ kind, className }: Props) {
           <path className="ap-line" d="M36 126h48" />
         </>
       )}
+      {kind === "generic" && (
+        <>
+          <rect className="ap-body" x="20" y="22" width="80" height="96" rx="6" />
+          <path className="ap-line" d="M20 46h80" />
+          <circle className="ap-line" cx="60" cy="82" r="18" />
+          <circle className="ap-dot" cx="34" cy="34" r="3" />
+        </>
+      )}
       {kind === "oven" && (
         <>
           <rect className="ap-body" x="16" y="22" width="88" height="96" rx="6" />

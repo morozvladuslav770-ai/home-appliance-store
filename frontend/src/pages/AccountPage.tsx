@@ -73,9 +73,9 @@ export default function AccountPage() {
             </div>
           </dl>
           {user.role !== "buyer" && (
-            <p className="panel__hint">
-              Інструменти для роботи з каталогом і замовленнями з'являться в адмін-панелі.
-            </p>
+            <Link className="btn btn--primary" to="/admin">
+              Адмін-панель
+            </Link>
           )}
         </aside>
 

@@ -1,4 +1,4 @@
-import { CATEGORIES } from "../data";
+import { useShop } from "../shop/context";
 import Appliance from "./Appliance";
 
 type Props = {
@@ -7,11 +7,12 @@ type Props = {
 };
 
 export default function Categories({ active, onSelect }: Props) {
+  const { categories } = useShop();
   return (
     <section className="section container" id="catalog" aria-labelledby="cat-title">
       <h2 id="cat-title">Категорії техніки</h2>
       <ul className="cats">
-        {CATEGORIES.map((c) => (
+        {categories.map((c) => (
           <li key={c.name}>
             <button
               type="button"

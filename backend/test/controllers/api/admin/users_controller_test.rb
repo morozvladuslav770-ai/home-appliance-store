@@ -46,4 +46,12 @@ class Api::Admin::UsersControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
     assert users(:buyer).reload.buyer?
   end
+
+  test "зміна ролі пишеться в журнал аудиту" do
+    patch api_admin_user_url(users(:buyer)), params: { role: "manager" }, headers: auth_headers(users(:admin)), as: :json
+    log = AuditLog.last
+    assert_equal "user.role", log.action
+    assert_equal %w[buyer manager], log.details["role"]
+    assert_equal users(:admin), log.user
+  end
 end

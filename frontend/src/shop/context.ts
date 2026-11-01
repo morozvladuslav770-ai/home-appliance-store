@@ -1,15 +1,18 @@
 import { createContext, useContext, type Dispatch, type SetStateAction } from "react";
-import type { Product } from "../data";
+import type { CategoryItem, Product } from "../data";
 import type { Filters } from "../filters";
 
 export type CartItem = { product: Product; qty: number };
 
 export type ShopState = {
   products: Product[];
+  categories: CategoryItem[];
   loading: boolean;
   demo: boolean;
   filters: Filters;
   setFilters: Dispatch<SetStateAction<Filters>>;
+  /** Перезавантажити товари й категорії (після змін в адмін-панелі) */
+  reload: () => void;
 };
 
 export type CartState = {

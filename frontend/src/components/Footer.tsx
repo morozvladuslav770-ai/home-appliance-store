@@ -1,6 +1,7 @@
-import { CATEGORIES } from "../data";
+import { useShop } from "../shop/context";
 
 export default function Footer() {
+  const { categories } = useShop();
   return (
     <footer className="footer" id="contacts">
       <div className="container footer__grid">
@@ -12,7 +13,7 @@ export default function Footer() {
         <div>
           <h2>Каталог</h2>
           <ul>
-            {CATEGORIES.slice(0, 4).map((c) => (
+            {categories.slice(0, 4).map((c) => (
               <li key={c.name}>
                 <a href="#catalog">{c.name}</a>
               </li>
