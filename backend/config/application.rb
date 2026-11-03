@@ -6,6 +6,18 @@ require "rails/all"
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
 
+# Локальні налаштування з backend/.env (SMTP-пароль тощо). Файл не потрапляє в git.
+# Уже задані змінні середовища мають пріоритет.
+env_file = File.expand_path("../.env", __dir__)
+if File.exist?(env_file) && !Rails.env.production?
+  File.foreach(env_file) do |line|
+    key, value = line.strip.split("=", 2)
+    next if key.blank? || key.start_with?("#") || value.nil?
+
+    ENV[key] ||= value.strip.delete_prefix('"').delete_suffix('"')
+  end
+end
+
 module Backend
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.

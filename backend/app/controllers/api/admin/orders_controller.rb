@@ -23,6 +23,7 @@ class Api::Admin::OrdersController < Api::Admin::BaseController
     if order.change_status!(to)
       AuditLog.record(current_user, "order.status", order,
                       summary: "Замовлення №#{order.id}", details: { status: [ from, to ] })
+      OrderMailer.status_changed(order).deliver_later
       render json: serialize(order.reload)
     else
       render_error("Зі статусу «#{from}» не можна перейти до «#{to}»", :unprocessable_entity)

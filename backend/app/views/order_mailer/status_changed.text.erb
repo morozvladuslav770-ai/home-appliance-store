@@ -1,0 +1,9 @@
+Вітаємо, <%= @order.customer_name %>!
+
+Статус вашого замовлення №<%= @order.id %> змінено: <%= status_label(@order.status) %>.
+<% if @note %>
+<%= @note %>
+<% end %>
+<%= render "order_mailer/details", order: @order %>
+Історія замовлень — в особистому кабінеті:
+<%= @account_url %>

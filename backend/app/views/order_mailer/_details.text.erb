@@ -1,0 +1,8 @@
+Склад замовлення:
+<% order.order_items.each do |item| -%>
+  • <%= item.name %> — <%= item.quantity %> × <%= money(item.unit_price) %>
+<% end -%>
+
+Разом: <%= money(order.total) %>
+Доставка: <%= delivery_label(order.delivery_method) %>, <%= order.city %><%= ", #{order.address}" if order.address.present? %>
+Оплата: <%= payment_label(order.payment_method) %>

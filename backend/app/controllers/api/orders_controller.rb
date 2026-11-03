@@ -14,6 +14,7 @@ class Api::OrdersController < ApplicationController
     order = Order.place(order_params.merge(user_id: current_user.id), items_params)
 
     if order.persisted?
+      OrderMailer.confirmation(order).deliver_later
       render json: serialize(order), status: :created
     else
       render json: { errors: order.errors.to_hash }, status: :unprocessable_entity
@@ -25,6 +26,7 @@ class Api::OrdersController < ApplicationController
     order = current_user.orders.find(params[:id])
 
     if order.cancel!
+      OrderMailer.status_changed(order).deliver_later
       render json: serialize(order.reload)
     else
       render_error("Це замовлення вже не можна скасувати", :unprocessable_entity)

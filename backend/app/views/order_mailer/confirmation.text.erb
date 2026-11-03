@@ -1,0 +1,9 @@
+Вітаємо, <%= @order.customer_name %>!
+
+Ми отримали ваше замовлення №<%= @order.id %>. Статус: <%= status_label(@order.status) %>.
+
+<%= render "order_mailer/details", order: @order %>
+Стежити за статусом можна в особистому кабінеті:
+<%= @account_url %>
+
+Якщо ви не робили це замовлення, зверніться до нас.
