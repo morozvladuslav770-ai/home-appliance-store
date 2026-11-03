@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { formatPrice, kindOf, STATUS_LABEL, type Product } from "../data";
 import { useCart } from "../shop/context";
 import Appliance from "./Appliance";
+import { CompareButton, WishlistButton } from "./ProductToggles";
 
 type Props = { product: Product };
 
@@ -23,6 +24,10 @@ export default function ProductCard({ product: p }: Props) {
           </span>
         )}
       </Link>
+      <div className="card__tools">
+        <CompareButton product={p} />
+        <WishlistButton product={p} />
+      </div>
       <div className="card__body">
         <span className="card__cat">
           {p.brand ? `${p.brand} · ${p.category}` : p.category}

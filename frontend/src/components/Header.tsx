@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/context";
-import { useCart, useShop } from "../shop/context";
+import { useCart, useCompare, useShop, useWishlist } from "../shop/context";
 
 const icon = {
   fill: "none",
@@ -13,6 +13,8 @@ const icon = {
 export default function Header() {
   const { filters, setFilters, categories } = useShop();
   const { count } = useCart();
+  const { products: compared } = useCompare();
+  const { ids: wished } = useWishlist();
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -68,18 +70,28 @@ export default function Header() {
         </form>
 
         <nav className="actions" aria-label="Кабінет і кошик">
-          <a className="action" href="#compare">
+          <Link className="action" to="/compare">
             <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" {...icon}>
               <path d="M7 4v16M17 4v16M3 8h8M13 16h8" />
             </svg>
             <span>Порівняння</span>
-          </a>
-          <a className="action" href="#wishlist">
+            {compared.length > 0 && (
+              <b className="badge" aria-label={`Товарів у порівнянні: ${compared.length}`}>
+                {compared.length}
+              </b>
+            )}
+          </Link>
+          <Link className="action" to="/wishlist">
             <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" {...icon}>
               <path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.6-7 10-7 10z" />
             </svg>
             <span>Бажане</span>
-          </a>
+            {wished.length > 0 && (
+              <b className="badge" aria-label={`Товарів у бажаному: ${wished.length}`}>
+                {wished.length}
+              </b>
+            )}
+          </Link>
           {user?.role !== "buyer" && user && (
             <Link className="action" to="/admin">
               <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" {...icon}>

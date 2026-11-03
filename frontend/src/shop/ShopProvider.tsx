@@ -3,7 +3,17 @@ import { API_BASE } from "../api";
 import { CATEGORIES, DEMO_PRODUCTS, kindOf, type CategoryItem, type Product } from "../data";
 import { EMPTY_FILTERS, type Filters } from "../filters";
 import { loadCart, maxQty, saveCart } from "./cart";
-import { CartContext, ShopContext, type CartItem, type CartState, type ShopState } from "./context";
+import { loadCompare, saveCompare } from "./compare";
+import {
+  CartContext,
+  CompareContext,
+  MAX_COMPARE,
+  ShopContext,
+  type CartItem,
+  type CartState,
+  type CompareState,
+  type ShopState,
+} from "./context";
 
 export default function ShopProvider({ children }: { children: ReactNode }) {
   const [products, setProducts] = useState<Product[]>([]);
@@ -12,6 +22,7 @@ export default function ShopProvider({ children }: { children: ReactNode }) {
   const [demo, setDemo] = useState(false);
   const [filters, setFilters] = useState<Filters>(EMPTY_FILTERS);
   const [stored, setStored] = useState<CartItem[]>(loadCart);
+  const [compareIds, setCompareIds] = useState<number[]>(loadCompare);
 
   const load = useCallback(() => {
     fetch(`${API_BASE}/products`)
@@ -54,6 +65,10 @@ export default function ShopProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     saveCart(stored);
   }, [stored]);
+
+  useEffect(() => {
+    saveCompare(compareIds);
+  }, [compareIds]);
 
   const shop = useMemo<ShopState>(
     () => ({ products, categories, loading, demo, filters, setFilters, reload: load }),
@@ -101,9 +116,28 @@ export default function ShopProvider({ children }: { children: ReactNode }) {
     [items],
   );
 
+  // Порівняння: у сховищі лише id, самі товари беруться з каталогу (тож ціни завжди актуальні)
+  const compare = useMemo<CompareState>(() => {
+    const byId = new Map(products.map((p) => [p.id, p]));
+    return {
+      products: compareIds.flatMap((id) => byId.get(id) ?? []),
+      has: (id) => compareIds.includes(id),
+      full: compareIds.length >= MAX_COMPARE,
+      toggle: (id) =>
+        setCompareIds((prev) => {
+          if (prev.includes(id)) return prev.filter((x) => x !== id);
+          return prev.length >= MAX_COMPARE ? prev : [...prev, id];
+        }),
+      remove: (id) => setCompareIds((prev) => prev.filter((x) => x !== id)),
+      clear: () => setCompareIds([]),
+    };
+  }, [compareIds, products]);
+
   return (
     <ShopContext.Provider value={shop}>
-      <CartContext.Provider value={cart}>{children}</CartContext.Provider>
+      <CartContext.Provider value={cart}>
+        <CompareContext.Provider value={compare}>{children}</CompareContext.Provider>
+      </CartContext.Provider>
     </ShopContext.Provider>
   );
 }

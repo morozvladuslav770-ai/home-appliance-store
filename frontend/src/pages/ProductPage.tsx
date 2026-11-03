@@ -5,6 +5,7 @@ import { maxQty } from "../shop/cart";
 import { useCart, useShop } from "../shop/context";
 import Appliance from "../components/Appliance";
 import ProductCard from "../components/ProductCard";
+import { CompareButton, WishlistButton } from "../components/ProductToggles";
 import QtyStepper from "../components/QtyStepper";
 import NotFound from "./NotFound";
 
@@ -88,6 +89,12 @@ function ProductView({ product: p }: { product: Product }) {
             </div>
 
             {p.description && <p className="pp__desc">{p.description}</p>}
+
+            <div className="pp__tools">
+              <WishlistButton product={p} />
+              <CompareButton product={p} />
+              <span>У бажане · Порівняти</span>
+            </div>
 
             <div className="pp__buy">
               <strong className="pp__price">{formatPrice(p.price)}</strong>

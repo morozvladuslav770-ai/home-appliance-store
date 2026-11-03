@@ -4,6 +4,7 @@ class User < ApplicationRecord
 
   has_secure_password
   has_many :orders, dependent: :nullify
+  has_many :wishlist_items, dependent: :destroy
 
   enum :role, { buyer: "buyer", manager: "manager", admin: "admin" }, validate: true
 

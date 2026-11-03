@@ -7,6 +7,7 @@ class Product < ApplicationRecord
        validate: { message: "оберіть статус" }
 
   has_many :order_items
+  has_many :wishlist_items, dependent: :destroy
 
   # FR-3.3: кілька фото товару; перше завантажене вважається головним
   MAX_PHOTOS = 8

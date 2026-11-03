@@ -6,6 +6,11 @@ Rails.application.routes.draw do
 
     resources :categories, only: [ :index ]
 
+    # FR-4.4: список бажаного (лише для зареєстрованих)
+    get "wishlist", to: "wishlist_items#index"
+    post "wishlist", to: "wishlist_items#create"
+    delete "wishlist/:product_id", to: "wishlist_items#destroy", as: :wishlist_item
+
     resources :orders, only: [ :index, :create ] do
       patch :cancel, on: :member
     end
