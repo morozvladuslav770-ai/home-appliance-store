@@ -8,6 +8,12 @@ class Product < ApplicationRecord
 
   has_many :order_items
 
+  # FR-3.3: кілька фото товару; перше завантажене вважається головним
+  MAX_PHOTOS = 8
+  MAX_PHOTO_SIZE = 5.megabytes
+  PHOTO_TYPES = %w[image/jpeg image/png image/webp].freeze
+  has_many_attached :photos
+
   normalizes :energy_class, :image_url, :description, with: ->(value) { value.strip.presence }
 
   before_validation :generate_sku, on: :create
@@ -72,6 +78,35 @@ class Product < ApplicationRecord
       status: "in_stock",
       updated_at: Time.current
     )
+  end
+
+  # Перевіряє файли до збереження, щоб при помилці нічого не змінилося наполовину
+  def photo_errors(files, remove_ids = [])
+    errors = []
+    kept = persisted? ? photos_attachments.reject { |a| remove_ids.include?(a.id) }.size : 0
+    errors << "не більше #{MAX_PHOTOS} фото на товар" if kept + files.size > MAX_PHOTOS
+
+    files.each do |file|
+      name = file.original_filename
+      errors << "«#{name}»: дозволені лише JPG, PNG і WebP" unless PHOTO_TYPES.include?(file.content_type)
+      errors << "«#{name}»: файл більший за #{MAX_PHOTO_SIZE / 1.megabyte} МБ" if file.size > MAX_PHOTO_SIZE
+    end
+    errors
+  end
+
+  # Список фото для JSON: [{ id, url }], головне — перше
+  def photo_list
+    base = Rails.configuration.x.api_url
+    photos_attachments.sort_by(&:id).map do |attachment|
+      path = Rails.application.routes.url_helpers.rails_blob_path(attachment.blob, only_path: true)
+      { id: attachment.id, url: "#{base}#{path}" }
+    end
+  end
+
+  # image_url — головне фото (або старе посилання, якщо фото не завантажено): так його показують картки й кошик
+  def as_json(options = nil)
+    list = photo_list
+    super.merge("photos" => list, "image_url" => list.first&.fetch(:url) || image_url)
   end
 
   private

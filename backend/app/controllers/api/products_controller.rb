@@ -4,6 +4,7 @@ class Api::ProductsController < ApplicationController
   #            min_rating, available=1, sort=price_asc|price_desc|rating|popular|newest
   def index
     products = Product
+      .with_attached_photos
       .search(params[:q])
       .in_category(params[:category])
       .by_brands(Array(params[:brand]).compact_blank)
@@ -27,6 +28,6 @@ class Api::ProductsController < ApplicationController
   end
 
   def show
-    render json: Product.find(params[:id])
+    render json: Product.with_attached_photos.find(params[:id])
   end
 end

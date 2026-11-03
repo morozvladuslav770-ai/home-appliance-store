@@ -13,6 +13,10 @@ function ProductView({ product: p }: { product: Product }) {
   const { add } = useCart();
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
+  const [photoIndex, setPhotoIndex] = useState(0);
+
+  const photos = p.photos ?? [];
+  const mainUrl = photos[photoIndex]?.url ?? p.image_url;
 
   const max = maxQty(p);
   const unavailable = max === 0;
@@ -40,9 +44,9 @@ function ProductView({ product: p }: { product: Product }) {
         </nav>
 
         <div className="pp__grid">
-          <div className="pp__media">
-            {p.image_url ? (
-              <img src={p.image_url} alt={p.name} />
+          <div className={`pp__media ${photos.length > 1 ? "pp__media--gallery" : ""}`}>
+            {mainUrl ? (
+              <img src={mainUrl} alt={p.name} />
             ) : (
               <Appliance kind={kindOf(p.category)} className="appliance" />
             )}
@@ -50,6 +54,23 @@ function ProductView({ product: p }: { product: Product }) {
               <span className="card__energy" title="Енергоклас">
                 {p.energy_class}
               </span>
+            )}
+            {photos.length > 1 && (
+              <ul className="thumbs" aria-label="Фото товару">
+                {photos.map((photo, i) => (
+                  <li key={photo.id}>
+                    <button
+                      type="button"
+                      className={i === photoIndex ? "is-active" : ""}
+                      aria-label={`Фото ${i + 1} з ${photos.length}`}
+                      aria-pressed={i === photoIndex}
+                      onClick={() => setPhotoIndex(i)}
+                    >
+                      <img src={photo.url} alt="" loading="lazy" />
+                    </button>
+                  </li>
+                ))}
+              </ul>
             )}
           </div>
 

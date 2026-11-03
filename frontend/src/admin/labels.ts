@@ -23,6 +23,7 @@ const FIELD_LABEL: Record<string, string> = {
   status: "Статус",
   stock_quantity: "Склад",
   image_url: "Фото",
+  photos: "Фото",
   rating: "Рейтинг",
   sku: "Артикул",
 };

@@ -25,10 +25,11 @@ export async function api<T = unknown>(
     const response = await fetch(`${API_BASE}${path}`, {
       method,
       headers: {
-        ...(body !== undefined ? { "Content-Type": "application/json" } : {}),
+        // для FormData (завантаження файлів) браузер сам додає Content-Type з boundary
+        ...(body !== undefined && !(body instanceof FormData) ? { "Content-Type": "application/json" } : {}),
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
-      body: body !== undefined ? JSON.stringify(body) : undefined,
+      body: body === undefined ? undefined : body instanceof FormData ? body : JSON.stringify(body),
     });
     const text = await response.text();
     const data = text ? JSON.parse(text) : null;

@@ -42,6 +42,9 @@ module Backend
     config.api_only = true
 
     # Адреса фронтенду для посилань у листах (підтвердження email, скидання пароля)
+    # Адреса API: з неї починаються посилання на завантажені фото
+    config.x.api_url = ENV.fetch("API_URL", "http://localhost:3000")
+
     config.x.frontend_url = ENV.fetch("FRONTEND_URL", "http://localhost:5173/home-appliance-store")
   end
 end

@@ -1,5 +1,7 @@
 export type ProductStatus = "in_stock" | "on_order" | "discontinued";
 
+export type ProductPhoto = { id: number; url: string };
+
 export type Product = {
   id: number;
   name: string;
@@ -12,7 +14,8 @@ export type Product = {
   sku: string | null;
   stock_quantity: number;
   rating: string | null;
-  image_url: string | null;
+  image_url: string | null; // головне фото (або старе посилання)
+  photos?: ProductPhoto[];
 };
 
 export type ApplianceKind =
