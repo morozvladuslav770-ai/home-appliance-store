@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { useShop } from "../shop/context";
 
 export default function Footer() {
@@ -24,9 +25,9 @@ export default function Footer() {
         <div>
           <h2>Покупцям</h2>
           <ul>
-            <li><a href="#delivery">Доставка й оплата</a></li>
-            <li><a href="#returns">Обмін і повернення</a></li>
-            <li><a href="#account">Особистий кабінет</a></li>
+            <li><Link to="/delivery">Доставка й оплата</Link></li>
+            <li><Link to="/returns">Обмін і повернення</Link></li>
+            <li><Link to="/account">Особистий кабінет</Link></li>
           </ul>
         </div>
 
