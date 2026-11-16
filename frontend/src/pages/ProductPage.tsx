@@ -7,6 +7,7 @@ import Appliance from "../components/Appliance";
 import ProductCard from "../components/ProductCard";
 import { CompareButton, WishlistButton } from "../components/ProductToggles";
 import QtyStepper from "../components/QtyStepper";
+import Reviews from "../components/Reviews";
 import NotFound from "./NotFound";
 
 function ProductView({ product: p }: { product: Product }) {
@@ -82,6 +83,7 @@ function ProductView({ product: p }: { product: Product }) {
               {p.rating && (
                 <span className="card__rating" aria-label={`Рейтинг ${p.rating} з 5`}>
                   ★ {Number(p.rating).toFixed(1)}
+                  {p.reviews_count ? ` · відгуків: ${p.reviews_count}` : ""}
                 </span>
               )}
               {p.sku && <span>Артикул: {p.sku}</span>}
@@ -144,6 +146,8 @@ function ProductView({ product: p }: { product: Product }) {
           </div>
         </div>
       </section>
+
+      <Reviews product={p} />
 
       {similar.length > 0 && (
         <section className="section container" aria-labelledby="similar-title">

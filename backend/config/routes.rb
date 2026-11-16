@@ -2,7 +2,10 @@ Rails.application.routes.draw do
   namespace :api do
     resources :products, only: [ :index, :show ] do
       get :facets, on: :collection
+      resources :reviews, only: [ :index, :create ]
     end
+
+    resources :reviews, only: [ :update ]
 
     resources :categories, only: [ :index ]
 
@@ -26,6 +29,7 @@ Rails.application.routes.draw do
       resources :products, only: [ :index, :create, :update, :destroy ]
       resources :categories, only: [ :index, :create, :update, :destroy ]
       resources :orders, only: [ :index, :update ]
+      resources :reviews, only: [ :index, :destroy ]
       resources :audit_logs, only: [ :index ]
     end
   end

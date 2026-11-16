@@ -14,6 +14,7 @@ export type Product = {
   sku: string | null;
   stock_quantity: number;
   rating: string | null;
+  reviews_count?: number;
   image_url: string | null; // головне фото (або старе посилання)
   photos?: ProductPhoto[];
 };

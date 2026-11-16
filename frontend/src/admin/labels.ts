@@ -10,6 +10,7 @@ export const ACTION_LABEL: Record<string, string> = {
   "category.update": "Перейменовано категорію",
   "category.destroy": "Видалено категорію",
   "order.status": "Змінено статус замовлення",
+  "review.destroy": "Видалено відгук",
   "user.role": "Змінено роль користувача",
 };
 
@@ -54,6 +55,9 @@ export function describeDetails(action: string, details: Record<string, unknown>
   if (action === "user.role") {
     const [from, to] = (details.role ?? []) as Role[];
     return `${ROLE_LABEL[from] ?? from} → ${ROLE_LABEL[to] ?? to}`;
+  }
+  if (action === "review.destroy") {
+    return `${details.author}, оцінка ${details.rating}: «${details.excerpt}»`;
   }
   const parts: string[] = [];
   if (details.sku) parts.push(`Артикул: ${details.sku}`);

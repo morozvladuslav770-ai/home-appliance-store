@@ -5,6 +5,7 @@ const TABS = [
   { to: "products", label: "Товари", adminOnly: false },
   { to: "categories", label: "Категорії", adminOnly: false },
   { to: "orders", label: "Замовлення", adminOnly: false },
+  { to: "reviews", label: "Відгуки", adminOnly: false },
   { to: "users", label: "Користувачі", adminOnly: true },
   { to: "audit", label: "Журнал дій", adminOnly: true },
 ];

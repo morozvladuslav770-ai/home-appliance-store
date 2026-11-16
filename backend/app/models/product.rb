@@ -8,6 +8,7 @@ class Product < ApplicationRecord
 
   has_many :order_items
   has_many :wishlist_items, dependent: :destroy
+  has_many :reviews, dependent: :destroy
 
   # FR-3.3: кілька фото товару; перше завантажене вважається головним
   MAX_PHOTOS = 8
@@ -93,6 +94,12 @@ class Product < ApplicationRecord
       errors << "«#{name}»: файл більший за #{MAX_PHOTO_SIZE / 1.megabyte} МБ" if file.size > MAX_PHOTO_SIZE
     end
     errors
+  end
+
+  # Середня оцінка й кількість відгуків рахуються з відгуків; без відгуків оцінки немає
+  def refresh_rating!
+    count = reviews.count
+    update_columns(reviews_count: count, rating: count.zero? ? nil : reviews.average(:rating).round(1))
   end
 
   # Список фото для JSON: [{ id, url }], головне — перше

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_04_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_16_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -109,10 +109,23 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_04_120000) do
     t.integer "stock_quantity", default: 0, null: false
     t.decimal "rating", precision: 2, scale: 1
     t.string "image_url"
+    t.integer "reviews_count", default: 0, null: false
     t.index ["brand"], name: "index_products_on_brand"
     t.index ["category"], name: "index_products_on_category"
     t.index ["sku"], name: "index_products_on_sku", unique: true
     t.index ["status"], name: "index_products_on_status"
+  end
+
+  create_table "reviews", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "product_id", null: false
+    t.integer "rating", null: false
+    t.text "body", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["product_id"], name: "index_reviews_on_product_id"
+    t.index ["user_id", "product_id"], name: "index_reviews_on_user_id_and_product_id", unique: true
+    t.index ["user_id"], name: "index_reviews_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -146,6 +159,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_04_120000) do
   add_foreign_key "order_items", "orders"
   add_foreign_key "order_items", "products"
   add_foreign_key "orders", "users"
+  add_foreign_key "reviews", "products"
+  add_foreign_key "reviews", "users"
   add_foreign_key "wishlist_items", "products"
   add_foreign_key "wishlist_items", "users"
 end
