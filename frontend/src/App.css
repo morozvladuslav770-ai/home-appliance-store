@@ -2131,9 +2131,12 @@
   justify-items: start;
 }
 
-.chip {
+.chat__example {
   padding: 10px 16px;
+  font-family: inherit;
   font-size: 15px;
+  font-weight: 400;
+  line-height: 1.4;
   text-align: left;
   color: var(--ink);
   background: var(--paper);
@@ -2142,7 +2145,7 @@
   cursor: pointer;
 }
 
-.chip:hover {
+.chat__example:hover {
   color: var(--cobalt);
   border-color: var(--cobalt);
 }

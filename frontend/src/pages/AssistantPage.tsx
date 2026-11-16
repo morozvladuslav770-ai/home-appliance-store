@@ -75,7 +75,7 @@ export default function AssistantPage() {
           <div className="chat__examples">
             <p>Наприклад:</p>
             {EXAMPLES.map((example) => (
-              <button type="button" key={example} className="chip" onClick={() => send(example)}>
+              <button type="button" key={example} className="chat__example" onClick={() => send(example)}>
                 {example}
               </button>
             ))}

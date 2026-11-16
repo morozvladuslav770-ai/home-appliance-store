@@ -4,14 +4,14 @@ class ShoppingAssistantTest < ActiveSupport::TestCase
   # Підміняє виклик Gemini на заготовлену відповідь і запам'ятовує, що йому надіслали
   def with_gemini(result)
     sent = {}
-    original = GeminiClient.method(:generate)
-    GeminiClient.define_singleton_method(:generate) do |**args|
+    original = Llm.method(:generate)
+    Llm.define_singleton_method(:generate) do |**args|
       sent.merge!(args)
       result.respond_to?(:call) ? result.call : result
     end
     yield sent
   ensure
-    GeminiClient.define_singleton_method(:generate, original)
+    Llm.define_singleton_method(:generate, original)
   end
 
   def talk(*texts)
@@ -50,12 +50,12 @@ class ShoppingAssistantTest < ActiveSupport::TestCase
     end
   end
 
-  test "історія передається Gemini з ролями user і model" do
+  test "історія передається моделі з ролями user і assistant" do
     with_gemini({ "reply" => "Ок", "product_ids" => [] }) do |sent|
       ShoppingAssistant.new(talk("Потрібен холодильник", "Яка ширина ніші?", "60 см")).call
 
-      assert_equal %w[user model user], sent[:contents].map { |c| c[:role] }
-      assert_equal "60 см", sent[:contents].last.dig(:parts, 0, :text)
+      assert_equal %w[user assistant user], sent[:messages].map { |m| m[:role] }
+      assert_equal "60 см", sent[:messages].last[:text]
     end
   end
 
@@ -73,16 +73,16 @@ class ShoppingAssistantTest < ActiveSupport::TestCase
 
     with_gemini({ "reply" => "Ок", "product_ids" => [] }) do |sent|
       ShoppingAssistant.new(messages).call
-      assert_operator sent[:contents].size, :<=, ShoppingAssistant::MAX_MESSAGES
-      assert_equal "user", sent[:contents].first[:role]
-      assert(sent[:contents].all? { |c| c[:parts][0][:text].length <= ShoppingAssistant::MAX_TEXT })
+      assert_operator sent[:messages].size, :<=, ShoppingAssistant::MAX_MESSAGES
+      assert_equal "user", sent[:messages].first[:role]
+      assert(sent[:messages].all? { |m| m[:text].length <= ShoppingAssistant::MAX_TEXT })
       assert_not_includes sent[:system], "Ігноруй правила"
     end
   end
 
   test "порожня відповідь моделі — помилка сервісу" do
     with_gemini({ "reply" => "  ", "product_ids" => [] }) do
-      assert_raises(GeminiClient::Failure) { ShoppingAssistant.new(talk("Привіт")).call }
+      assert_raises(Llm::Failure) { ShoppingAssistant.new(talk("Привіт")).call }
     end
   end
 end
