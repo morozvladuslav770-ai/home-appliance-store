@@ -140,6 +140,9 @@ export default function Header() {
               </button>
             </li>
           ))}
+          <li className="catnav__ai">
+            <Link to="/assistant">✦ Підібрати з ШІ</Link>
+          </li>
         </ul>
       </nav>
     </header>

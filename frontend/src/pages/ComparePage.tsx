@@ -57,6 +57,9 @@ export default function ComparePage() {
           </button>
         </div>
       </div>
+      <p className="panel__hint">
+        Не знаєте, що обрати? <Link to="/assistant">Запитайте ШІ-помічника</Link>: він підбере техніку під ваші умови.
+      </p>
       {products.length === 1 && <p className="panel__hint">Додайте ще хоча б один товар, щоб порівняти.</p>}
 
       <div className="table-wrap">

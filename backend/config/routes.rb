@@ -9,6 +9,9 @@ Rails.application.routes.draw do
 
     resources :categories, only: [ :index ]
 
+    # ШІ-помічник з підбору техніки (Gemini)
+    post "assistant", to: "assistant#create"
+
     # FR-4.4: список бажаного (лише для зареєстрованих)
     get "wishlist", to: "wishlist_items#index"
     post "wishlist", to: "wishlist_items#create"

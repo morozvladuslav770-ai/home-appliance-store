@@ -26,6 +26,7 @@ import AdminOrdersPage from "./pages/admin/AdminOrdersPage";
 import AdminReviewsPage from "./pages/admin/AdminReviewsPage";
 import AdminUsersPage from "./pages/admin/AdminUsersPage";
 import AdminAuditPage from "./pages/admin/AdminAuditPage";
+import AssistantPage from "./pages/AssistantPage";
 import DeliveryPage from "./pages/DeliveryPage";
 import ReturnsPage from "./pages/ReturnsPage";
 import NotFound from "./pages/NotFound";
@@ -41,6 +42,7 @@ function App() {
               <Route path="product/:id" element={<ProductPage />} />
               <Route path="cart" element={<CartPage />} />
               <Route path="compare" element={<ComparePage />} />
+              <Route path="assistant" element={<AssistantPage />} />
               <Route path="delivery" element={<DeliveryPage />} />
               <Route path="returns" element={<ReturnsPage />} />
               <Route path="login" element={<LoginPage />} />
