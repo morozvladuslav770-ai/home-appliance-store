@@ -10,12 +10,15 @@ class BrevoDeliveryMethod
   def deliver!(mail)
     uri = URI("https://api.brevo.com/v3/smtp/email")
 
-    sender = Mail::Address.new(mail[:from].formatted)
+    sender = Mail::Address.new(ENV.fetch("MAIL_FROM"))
+
+    raise "Invalid MAIL_FROM address" if sender.address.blank?
+
     payload = {
-      sender: {
-        name: sender.display_name || "ТехноДім",
-        email: sender.address
-      },
+  sender: {
+    name: sender.display_name.presence || "ТехноДім",
+    email: sender.address
+  },
       to: mail.to.map { |email| { email: email } },
       subject: mail.subject,
       textContent: mail.body.decoded
