@@ -79,7 +79,7 @@ class ShoppingAssistant
   def catalog_text
     catalog.map do |p|
       [ p.id, p.name, p.category, p.brand.presence || "—", "#{p.price.to_i} грн", p.energy_class.presence || "—",
-        p.rating || "—", STATUS_LABEL.fetch(p.status, p.status), p.description.to_s.squish.truncate(200) ].join(" | ")
+        p.rating || "—", STATUS_LABEL.fetch(p.status, p.status), p.description.to_s.squish.truncate(600) ].join(" | ")
     end.join("\n")
   end
 

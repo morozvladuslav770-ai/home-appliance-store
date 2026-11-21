@@ -167,8 +167,12 @@ function ProductForm({
         </Field>
       </div>
       <Field label="Опис" error={errors.description}>
-        <textarea rows={3} value={form.description} onChange={(e) => set("description", e.target.value)} />
+        <textarea rows={10} value={form.description} onChange={(e) => set("description", e.target.value)} />
       </Field>
+      <p className="panel__hint">
+        Абзаци розділяйте порожнім рядком. Пункти списку починайте з «• »; рядок із двокрапкою перед списком стане
+        підзаголовком.
+      </p>
 
       <div className="photo-picker">
         <span className="photo-picker__title">

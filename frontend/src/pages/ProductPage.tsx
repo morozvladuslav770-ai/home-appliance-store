@@ -6,6 +6,7 @@ import { useCart, useShop } from "../shop/context";
 import Appliance from "../components/Appliance";
 import ProductCard from "../components/ProductCard";
 import { CompareButton, WishlistButton } from "../components/ProductToggles";
+import Description from "../components/Description";
 import QtyStepper from "../components/QtyStepper";
 import Reviews from "../components/Reviews";
 import NotFound from "./NotFound";
@@ -90,7 +91,7 @@ function ProductView({ product: p }: { product: Product }) {
               <span className={`status status--${p.status}`}>{STATUS_LABEL[p.status]}</span>
             </div>
 
-            {p.description && <p className="pp__desc">{p.description}</p>}
+            {p.description && <Description text={p.description} />}
 
             <div className="pp__tools">
               <WishlistButton product={p} />

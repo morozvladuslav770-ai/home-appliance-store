@@ -40,7 +40,7 @@ export default function ProductCard({ product: p }: Props) {
             ★ {Number(p.rating).toFixed(1)}
           </span>
         )}
-        <p>{p.description}</p>
+        <p className="card__desc">{p.description?.split(/\n{2,}/)[0]}</p>
         <span className={`status status--${p.status}`}>{STATUS_LABEL[p.status]}</span>
         <div className="card__buy">
           <strong>{formatPrice(p.price)}</strong>

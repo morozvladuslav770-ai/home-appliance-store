@@ -34,8 +34,8 @@ export default function Footer() {
         <div>
           <h2>Контакти</h2>
           <ul>
-            <li><a href="tel:+380000000000">+38 (000) 000-00-00</a></li>
-            <li><a href="mailto:info@example.com">info@example.com</a></li>
+            <li><a href="tel:+380964900983">+38 (096) 490-09-83</a></li>
+            <li><a href="mailto:technodim.shop.ua@gmail.com">technodim.shop.ua@gmail.com</a></li>
             <li>
               <a href="#instagram">Instagram</a>, <a href="#facebook">Facebook</a>
             </li>
