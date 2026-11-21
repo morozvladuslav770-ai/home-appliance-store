@@ -1,11 +1,16 @@
+# Дозволені frontend-домени задаються через CORS_ORIGINS (список через кому).
+# Локальна адреса використовується за замовчуванням для розробки.
+allowed_origins = ENV.fetch("CORS_ORIGINS", "http://localhost:5173")
+                       .split(",")
+                       .map(&:strip)
+                       .reject(&:blank?)
 
-# Дозволяємо локальному React-застосунку звертатися до Rails API
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
-    origins "http://localhost:5173"
+    origins(*allowed_origins)
 
     resource "/api/*",
       headers: :any,
-      methods: [:get, :post, :put, :patch, :delete, :options, :head]
+      methods: %i[get post put patch delete options head]
   end
 end

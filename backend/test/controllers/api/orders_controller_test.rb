@@ -13,7 +13,8 @@ class Api::OrdersControllerTest < ActionDispatch::IntegrationTest
     }.merge(overrides)
   end
 
-  def post_order(items, overrides = {}, user: users(:buyer))
+  def post_order(items, overrides = {}, user: users(:buyer), **extra_overrides)
+    overrides = overrides.merge(extra_overrides)
     post api_orders_url,
          params: { order: order_attrs(overrides), items: items },
          headers: user ? auth_headers(user) : {},

@@ -1,4 +1,9 @@
-export const API_BASE = "http://localhost:3000/api";
+// У production адресу API задаємо через VITE_API_URL у налаштуваннях хостингу.
+// Локально залишаємо Rails на localhost:3000.
+const API_URL = (import.meta.env.VITE_API_URL || (import.meta.env.DEV ? "http://localhost:3000" : ""))
+  .replace(/\/$/, "");
+
+export const API_BASE = `${API_URL}/api`;
 
 export type FieldErrors = Record<string, string[]>;
 
