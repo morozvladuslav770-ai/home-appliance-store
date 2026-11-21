@@ -38,6 +38,9 @@ jobs:
 
       - name: Build
         working-directory: frontend
+        env:
+          VITE_BASE_PATH: /home-appliance-store/
+          VITE_API_URL: https://home-appliance-store-gokm.onrender.com
         run: npm run build
 
       - name: Setup Pages
