@@ -103,13 +103,26 @@ class Product < ApplicationRecord
   end
 
   # Список фото для JSON: [{ id, url }], головне — перше
-  def photo_list
-    base = Rails.configuration.x.api_url
-    photos_attachments.sort_by(&:id).map do |attachment|
-      path = Rails.application.routes.url_helpers.rails_blob_path(attachment.blob, only_path: true)
-      { id: attachment.id, url: "#{base}#{path}" }
-    end
+ def photo_list
+  base = Rails.configuration.x.api_url
+
+  photos_attachments.sort_by(&:id).map do |attachment|
+    blob = attachment.blob
+
+    url =
+      if blob.service_name == "cloudinary"
+        blob.url
+      else
+        path = Rails.application.routes.url_helpers.rails_blob_path(
+          blob,
+          only_path: true
+        )
+        "#{base}#{path}"
+      end
+
+    { id: attachment.id, url: url }
   end
+end
 
   # image_url — головне фото (або старе посилання, якщо фото не завантажено): так його показують картки й кошик
   def as_json(options = nil)
